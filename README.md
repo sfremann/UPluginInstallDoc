@@ -58,3 +58,26 @@ PublicDependencyModuleNames.AddRange(new string[]
 
 > [!WARNING]
 > Some modules are __Runtime__ modules, some others are __Editor__ modules. __Editor__ modules are not supposed to be used at runtime. Do not try to include them in a runtime plugin module or in the main project's `Build.cs`.
+
+> [!CAUTION]
+> If you run into trouble, you might need to do the following in the `Build.cs` file (but that should __NOT__ be necessary):
+> - Add `"ThisPluginModule/Public"` and `"ThisPluginModule/Classes"` to `PublicIncludePaths`
+> - Add `"ThisPluginModule/Public"` and `"ThisPluginModule/Classes"` to `PrivateIncludePaths`
+```
+...
+PublicIncludePaths.AddRange(new string[]
+    {
+        ...,
+        "ThisPluginModule/Public",
+        "ThisPluginModule/Classes",
+    }
+);
+...
+PrivateIncludePaths.AddRange(new string[]
+    {
+        ...,
+        "ThisPluginModule/Public",
+        "ThisPluginModule/Classes",
+    }
+);
+```
