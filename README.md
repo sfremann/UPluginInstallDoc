@@ -8,76 +8,78 @@ Many Unreal Engine plugins can be found directly on the marketplace [Fab](https:
 More plugins can be found online, on GitHub repositories for example, and require a manual installation:
 - For __global__ installation (all projects) download release and extract in Unreal installation folder
     - `"/Epic Games/UE_[X].[Y]/Engine/Plugins/Marketplace/"`
-- For __local__ installation (specific project MyProject) download release or clone repository (as submodule eventually) in your project folder
-  	- `"/[MyProject]/Plugins/"`
+- For __local__ installation (specific project) download release or clone repository (as submodule eventually) in your project folder
+    - `"/[Project]/Plugins/"`
 
 Then it should show up in your project when you go to `Edit > Plugins`.
 
 ## Dependencies
 
-You can use code from the plugins containing C++ in your project or in other plugins. For this, you need to set up dependencies for the plugin module(s). Let's say imagine you're interested in a plugin ThisPlugin (specifically the ThisPluginModule module) and you want to add dependencies to your Unreal project MyProject and/or to your other plugin MyPlugin (specifically in the module MyPluginModule). You will need to add dependencies in the `Build.cs` files for MyProject and MyPlugin.
+You can use code from the plugins containing C++ in your project or in other plugins. For this, you need to set up dependencies for the plugin module(s). Let's say imagine you're interested in a plugin `[Plugin]` (specifically in the `[PluginModule]` module) and you want to add dependencies to your Unreal project `[Project]` and/or to your other plugin `[OtherPlugin]` (specifically to the `[OtherPluginModule]` module). You will need to add dependencies in the `Build.cs` files for `[Project]` and `[OtherPlugin]`.
 
-- __MyProject__ `Build.cs` -> "`/[MyProject]/Source/[MyProject]/[MyProject].Build.cs"`
-- __MyPlugin__ `Build.cs` -> `"/[MyProject]/Plugins/[MyPlugin]/Source/[MyPluginModule]/[MyPluginModule].Build.cs"`
+- __Project__ `Build.cs`:
+    - "`/[Project]/Source/[Project]/[Project].Build.cs"`
+- __Other plugin__ `Build.cs`:
+    - `"/[Project]/Plugins/[OtherPlugin]/Source/[OtherPluginModule]/[OtherPluginModule].Build.cs"`
 
-If you use the code in another plugin, you might want to add a dependency for the ThisPlugin plugin in the `.uplugin` file: open `"/[MyProject]/Plugins/[MyPlugin]/[MyPlugin].uplugin"` and add `"ThisPlugin"` to `"Plugins"`.
+If you use the code in another plugin, you might want to add a dependency for the `[Plugin]` plugin in the `.uplugin` file: open `"/[Project]/Plugins/[OtherPlugin]/[OtherPlugin].uplugin"` and add `"[Plugin]"` to `"Plugins"`.
 ```
 {
     ..., 
     "Plugins": [
         ..., 
         {
-            "Name": "ThisPlugin", 
+            "Name": "[Plugin]", 
             "Enabled": true
         }
     ]
 }
 ```
 
-In the `Build.cs` file(s): add `"ThisPluginModule"` to `PrivateDependencyModuleNames`. This will allow you to include files from ThisPluginModule module in your project/plugin's __private__ `.cpp` and `.h` files.
+In the `Build.cs` file(s): add `"[PluginModule]"` to `PrivateDependencyModuleNames`. This will allow you to include files from [PluginModule] module in your project/plugin's __private__ `.cpp` and `.h` files.
 ```
 ...
 PrivateDependencyModuleNames.AddRange(new string[]
     {
         ...,
-        "ThisPluginModule"
+        "[PluginModule]"
     }
 );
 ```
 
-If you need to include files from ThisPluginModule module in your project/plugin's __public__ `.h` files (e.g. if you want a class to inherit from one of the plugin's classes), in the `Build.cs` file: add `"ThisPluginModule"` to `PublicDependencyModuleNames`.
+If you need to include files from `[PluginModule]` module in your project/plugin's __public__ `.h` files (e.g. if you want a class to inherit from one of the plugin's classes), in the `Build.cs` file: add `"[PluginModule]"` to `PublicDependencyModuleNames`.
 ```
 ...
 PublicDependencyModuleNames.AddRange(new string[]
     {
         ...,
-        "ThisPluginModule"
+        "[PluginModule]"
     }
 );
 ```
 
 > [!WARNING]
-> Some modules are __Runtime__ modules, some others are __Editor__ modules. __Editor__ modules are not supposed to be used at runtime. Do not try to include them in a runtime plugin module or in the main project's `Build.cs`.
+> Some modules are __Runtime__ modules, some others are __Editor__ modules. __Editor__ modules are not supposed to be used at runtime. Do not try to include them in a plugin runtime module or in the main project's `Build.cs`.
 
 > [!CAUTION]
 > If you run into trouble, you might need to do the following in the `Build.cs` file (but that should __NOT__ be necessary):
-> - Add `"ThisPluginModule/Public"` and `"ThisPluginModule/Classes"` to `PublicIncludePaths`
-> - Add `"ThisPluginModule/Public"` and `"ThisPluginModule/Classes"` to `PrivateIncludePaths`
+> - Add `"[PluginModule]/Public"` and `"[PluginModule]/Classes"` to `PublicIncludePaths`
+> - Add `"[PluginModule]/Public"` and `"[PluginModule]/Classes"` to `PrivateIncludePaths`
 ```
 ...
 PublicIncludePaths.AddRange(new string[]
     {
         ...,
-        "ThisPluginModule/Public",
-        "ThisPluginModule/Classes",
+        "[PluginModule]/Public",
+        "[PluginModule]/Classes",
     }
 );
 ...
 PrivateIncludePaths.AddRange(new string[]
     {
         ...,
-        "ThisPluginModule/Public",
-        "ThisPluginModule/Classes",
+        "[PluginModule]/Public",
+        "[PluginModule]/Classes",
     }
 );
 ```
